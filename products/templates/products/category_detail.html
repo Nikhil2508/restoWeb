@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<h4>{{object}}</h4>
+
+<table class="table">
+
+{% for products in products %}
+  <tr>
+    <td><a href="{{products.get_absolute_url}}">{{products.title}}</a></td>
+  </tr>
+{% endfor %}
+</table>
+
+{% endblock %}

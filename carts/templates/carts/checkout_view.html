@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+
+<script>
+
+  {% block jquery %}
+
+  var form = document.getElementById('theForm');
+  var submitForm = document.getElementById('submitCheckout');
+  var cod = "cod";
+  var online = "online";
+  var total = toInteger({{order.order_total}}*100);
+  var userName = '{{user}}';
+  var userEmail = '{{user.email}}';
+  var shipping_address = '{{order.shipping_address.get_address}}';
+  function toInteger(number){
+    return Math.round(  // round to nearest integer
+      Number(number)    // type cast your input
+    );
+  };
+
+  var options = {
+      "key": "rzp_test_Vqw34kNUFcw8Qm",
+      "amount": total, // 2000 paise = INR 20
+      "name": "{{user}}",
+      "description": "item(s): {{order.cart.cartitem_set.count}}",
+      "image": "/your_logo.png",
+      "handler": function (response){
+          alert(response.razorpay_payment_id);
+          form.submit();
+          // var new_url = "{% url 'checkout_final' %}";
+          // console.log(new_url);
+      },
+      "prefill": {
+          "name": "userName",
+          "email": "userEmail"
+      },
+      "notes": {
+          "address": shipping_address
+      },
+      "theme": {
+          "color": "#F37254"
+      }
+  };
+
+  submitForm.onclick = function(e){
+      e.preventDefault();
+      var paymentMethod = $(".paymentMethod_select option:selected").attr("data-payment-method");
+      if(paymentMethod == cod){
+          form.submit();
+      }else {
+        razorPay();
+      }
+  };
+
+
+
+function razorPay(){
+
+  var rzp1 = new Razorpay(options);
+
+  // document.getElementById('rzp-button1').onclick = function(e){
+
+
+    console.log(total);
+      rzp1.open();
+      e.preventDefault();
+  // };
+
+}
+
+
+  {% endblock %}
+
+
+</script>
+
+{% block content %}
+
+{% if not user_can_continue %}
+
+<div class="col-sm-6">
+  <p class="lead">Continue as Guest</p>
+<form class="" action="" method="POST">{% csrf_token %}
+
+  {{form|crispy}}
+  <input type="submit" name="" class="btn btn-success" value="Continue as guest">
+
+</form>
+</div>
+
+<div class="col-sm-6">
+  <p class="lead">Login to continue</p>
+
+<form class="" action="{% url 'auth_login' %}" method="POST">{% csrf_token %}
+  {{login_form|crispy}}
+  <input type="hidden" name="next" value="{{ next_url }}">
+  <input type="submit" name="" class="btn btn-success" value="Login">
+
+</form>
+<p>{% trans "Forgot password" %}? <a href="{% url 'auth_password_reset' %}">{% trans "Reset it" %}</a>!</p>
+<p>{% trans "Not member" %}? <a href="{% url 'registration_register' %}">{% trans "Register" %}</a>!</p>
+</div>
+{% else %}
+<div class="col-sm-4 col-sm-offset-4 text-center">
+<!-- <button type="button" id="rzp-button1" name="Pay">Pay</button> -->
+<p class="lead">Order Summary</p>
+<table class="table">
+
+  <tr>  <td>{{order.cart.cartitem_set.count}} Item(s): <br>{% for i in order.cart.cartitem_set.all %}
+  <b>{{i.item.get_title}}</b><br>
+  {%endfor%}
+  </td> </tr>
+  <tr>  <td>Cart Subtotal: {{order.cart.subtotal}}</td> </tr>
+  <tr>  <td>Tax: {{order.cart.tax_total}}</td> </tr>
+  <tr>  <td>Cart Total: {{order.cart.total}}</td> </tr>
+  <tr>  <td>Shipping: {{order.shipping_total_price}}</td> </tr>
+  <tr>  <td>Order Total: {{order.order_total}}</td> </tr>
+
+</table>
+</div>
+
+<div class="col-sm-4 col-sm-offset-4 text-center">
+
+  <!-- <p><b>Billing to:</b></p>
+  {{order.billing_address.get_address}}
+  <br>
+  <br>
+  <p><b>Shipping to:</b></p>
+  {{order.shipping_address.get_address}}
+  <br>
+  <br>
+
+  <a href="{% url 'order_address'%}">Change an address</a>
+  <br>
+  <br> -->
+  <form  action="{% url 'checkout_final' %}" id="theForm" method="post">{% csrf_token %}
+    <input type="hidden" name="payment_token" value="ABC">
+    <select class="form-control paymentMethod_select" name="payment_method">
+        <option data-payment-method="cod" value="cod">COD</option>
+        <option data-payment-method="online" value="online">RazorPay</option>
+    </select>
+    <br>
+    <p><button type="submit" class="btn btn-success" id="submitCheckout">Complete Order</button></p>
+  </form>
+  <br>
+</div>
+
+{% endif %}
+{% endblock %}

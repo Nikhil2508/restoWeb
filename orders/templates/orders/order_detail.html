@@ -1,0 +1,16 @@
+{%extends "base.html"%}
+<script>
+
+  {% block jquery%}
+    window.onbeforeunload = function() {
+      event.preventDefault()
+      window.location.replace("http://127.0.0.1:8000/");
+    };
+
+  {% endblock %}
+</script>
+{% block content%}
+
+{% include "orders/order_summary_short.html" with order=order %}
+
+{% endblock %}

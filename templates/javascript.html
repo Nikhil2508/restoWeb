@@ -1,0 +1,97 @@
+{% load staticfiles %}
+<!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="{% static 'js/bootstrap.min.js' %}"></script>
+    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+    <script src="{% static 'js/ie10-viewport-bug-workaround.js' %}"></script>
+    <script src="{% static 'js/checkout.js' %}">  </script>
+    <!-- <script>
+    var options = {
+        "key": "rzp_test_Vqw34kNUFcw8Qm",
+        "amount": "2000", // 2000 paise = INR 20
+        "name": "Urban Nashta",
+        "description": "Parsi Akuri",
+        "image": "/your_logo.png",
+        "handler": function (response){
+            alert(response.razorpay_payment_id);
+
+        },
+        "prefill": {
+            "name": "Nikhil Umraliya",
+            "email": "nikhil@urbannashta.com",
+        },
+        "notes": {
+            "address": "Hello World"
+        },
+        "theme": {
+            "color": "#F37254"
+        }
+    };
+    var rzp1 = new Razorpay(options);
+
+    document.getElementById('rzp-button1').onclick = function(e){
+        rzp1.open();
+        e.preventDefault();
+    }
+    </script> -->
+
+
+
+    <script>
+
+
+
+    function updateCartItemCount() {
+
+      var badge = $("#cart-count-badge");
+
+      $.ajax({
+
+          type: "GET",
+          url: "{% url 'item_count'%}",
+          success: function(data){
+            badge.text(data.count);
+          },
+          error: function(response,error){
+            console.log(response);
+            console.log(error);
+          }
+
+
+      })
+
+
+    }
+
+      $(document).ready(function(){
+
+          updateCartItemCount()
+
+
+      })
+    // $(document).ready(function({
+    //
+    //     var badge = $("#cart-count-badge");
+    //
+    //     $.ajax({
+    //
+    //         type : "GET"
+    //         url: "{% url 'item_count' %}"
+    //         success: function(data){
+    //
+    //           badge.text(data.count);
+    //
+    //
+    //         },
+    //         error: function(response, error){
+    //
+    //             console.log(response);
+    //             console.log(error);
+    //         }
+    //     })
+    //
+    // }))
+
+    </script>
